@@ -16,6 +16,7 @@ erDiagram
         uuid id PK
         text jina
         text email
+        numeric phone
         text role "mratibu / mjumbe"
     }
 
@@ -70,13 +71,13 @@ erDiagram
 
 ## Maswali Yaliyotupa Uhusiano Huu
 
-| Swali | Jibu | Matokeo kwenye model |
-|---|---|---|
-| Tukio moja lina wachangiaji wangapi? | Wengi | EVENT →many CONTRIBUTOR |
-| Mchangiaji analipa mara ngapi? | Nyingi (kidogo kidogo) | CONTRIBUTOR →many PAYMENT |
-| Kila mchangiaji lazima awe na ahadi? | Hapana (FR-D3) | PLEDGE ni hiari |
-| Bibi wa gunia la mchele anaonekana wapi? | IN_KIND | Table yake kamili (FR-H1) |
-| Balance inahifadhiwa wapi? | **Haihifadhiwi** — inahesabiwa: ahadi − jumla ya malipo (FR-E3) | Hakuna column ya balance! |
+| Swali                                    | Jibu                                                            | Matokeo kwenye model      |
+| ---------------------------------------- | --------------------------------------------------------------- | ------------------------- |
+| Tukio moja lina wachangiaji wangapi?     | Wengi                                                           | EVENT →many CONTRIBUTOR   |
+| Mchangiaji analipa mara ngapi?           | Nyingi (kidogo kidogo)                                          | CONTRIBUTOR →many PAYMENT |
+| Kila mchangiaji lazima awe na ahadi?     | Hapana (FR-D3)                                                  | PLEDGE ni hiari           |
+| Bibi wa gunia la mchele anaonekana wapi? | IN_KIND                                                         | Table yake kamili (FR-H1) |
+| Balance inahifadhiwa wapi?               | **Haihifadhiwi** — inahesabiwa: ahadi − jumla ya malipo (FR-E3) | Hakuna column ya balance! |
 
 > **Kanuni ya mwisho ni muhimu:** balance haihifadhiwi kwenye database — inahesabiwa kila inapohitajika. Ukihifadhi kitu kinachoweza kuhesabiwa, siku moja kitakosana na ukweli. Hii itakuwa function yetu ya kwanza muhimu: `calculateBalance()`.
 
