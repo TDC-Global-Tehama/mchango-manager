@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="sw">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Michango Manager</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="top">
+      <h1>Michango Manager 🏠</h1>
+      <p class="event-name">Harusi ya Amina &amp; Juma — 12 Des 2026</p>
+    </header>
+
+    <main>
+      <!-- FR-F1: Dashboard ya tukio -->
+      <section class="cards">
+        <article class="card">
+          <p class="label">Jumla Iliyokusanywa</p>
+          <p class="value" id="collected">TZS 3,250,000</p>
+        </article>
+        <article class="card">
+          <p class="label">Lengo</p>
+          <p class="value" id="target">TZS 5,000,000</p>
+        </article>
+        <article class="card highlight">
+          <p class="label">Asilimia ya Lengo</p>
+          <p class="value" id="percent">—</p>
+          <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+        </article>
+        <article class="card">
+          <p class="label">Asilimia ya Lengo</p>
+          <div class="donut" id="donut">
+            <span class="donut-text" id="percent2">—</span>
+          </div>
+        </article>
+      </section>
+      <!-- FR-F2: Orodha ya wachangiaji na status -->
+      <section class="list">
+        <h2>Wachangiaji</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Jina</th>
+              <th>Ahadi</th>
+              <th>Amelipa</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Mama Ntilie</td>
+              <td>500,000</td>
+              <td>500,000</td>
+              <td><span class="badge paid">Amelipa yote</span></td>
+            </tr>
+            <tr>
+              <td>Mzee Kassim</td>
+              <td>1,000,000</td>
+              <td>600,000</td>
+              <td><span class="badge partial">Balance 400,000</span></td>
+            </tr>
+            <tr>
+              <td>Dada Neema</td>
+              <td>300,000</td>
+              <td>0</td>
+              <td><span class="badge unpaid">Hajalipa</span></td>
+            </tr>
+            <tr>
+              <td>Fundi Musa</td>
+              <td>—</td>
+              <td>—</td>
+              <td><span class="badge inkind">Mahema 2 (vitu) 🎁</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note">
+          Data hii ni ya kubuni — session ya database itaifanya halisi. Leo
+          tunajenga sura. (Angalia Fundi Musa — FR-H1 inaonekana tayari!)
+        </p>
+      </section>
+    </main>
+    <script src="js/app.js"></script>
+  </body>
+</html>
