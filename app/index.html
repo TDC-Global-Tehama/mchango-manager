@@ -1,68 +1,115 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="sw">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Michango Manager — Dashboard</title>
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
-    <header class="top">
-      <h1>Michango Manager 🏠</h1>
-      <!-- Data yote sasa inatoka DATABASE — hakuna ya kubuni tena -->
-      <p class="event-name" id="eventName">Inapakia...</p>
-    </header>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Michango Manager — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
-    <main>
-      <!-- FR-F1: Dashboard ya tukio -->
-      <section class="cards">
-        <article class="card">
-          <p class="label">Jumla Iliyokusanywa</p>
-          <p class="value" id="collected">—</p>
-        </article>
-        <article class="card">
-          <p class="label">Lengo</p>
-          <p class="value" id="target">—</p>
-        </article>
-        <article class="card highlight">
-          <p class="label">Asilimia ya Lengo</p>
-          <div class="donut" id="donut">
-            <span class="donut-text" id="percent">—</span>
+  <header class="top">
+    <h1>Michango Manager 🏠</h1>
+    <p class="event-name" id="eventName">Inapakia...</p>
+  </header>
+
+  <main>
+    <!-- FR-F1: Dashboard ya tukio -->
+    <section class="cards">
+      <article class="card">
+        <p class="label">Jumla Iliyokusanywa</p>
+        <p class="value" id="collected">—</p>
+      </article>
+      <article class="card">
+        <p class="label">Lengo</p>
+        <p class="value" id="target">—</p>
+      </article>
+      <article class="card highlight">
+        <p class="label">Asilimia ya Lengo</p>
+        <div class="donut" id="donut">
+          <span class="donut-text" id="percent">—</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- ============================================================
+         FR-E1: FORM YA KUREKODI MALIPO — mpya Session 6!
+         Hapa ndipo mfumo unapoanza KUANDIKA, siyo kusoma tu.
+         ============================================================ -->
+    <section class="form-section">
+      <h2>Rekodi Malipo 💰</h2>
+
+      <!-- novalidate: tunazima validation ya browser ili TUJIFUNZE kuandika yetu -->
+      <form id="paymentForm" novalidate>
+        <div class="field">
+          <label for="mchangiaji">Mchangiaji</label>
+          <!-- Chaguo hizi zinajazwa na JavaScript kutoka database -->
+          <select id="mchangiaji" name="mchangiaji">
+            <option value="">-- Chagua mchangiaji --</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="kiasi">Kiasi (TZS)</label>
+          <input type="number" id="kiasi" name="kiasi" placeholder="mfano: 50000" min="1" step="1">
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="tarehe">Tarehe</label>
+            <input type="date" id="tarehe" name="tarehe">
           </div>
-        </article>
-      </section>
 
-      <!-- FR-F2: Orodha ya wachangiaji -->
-      <section class="list">
-        <h2>Wachangiaji</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Jina</th>
-              <th>Ahadi</th>
-              <th>Amelipa</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <!-- tbody ni TUPU: JavaScript itaijaza kutoka database -->
-          <tbody id="contributorRows"></tbody>
-        </table>
-        <p class="note">
-          Data hii inatoka Supabase — halisi, siyo ya kubuni. Ibadilishe kwenye
-          database, refresh, na uone. ✨
-        </p>
-      </section>
-    </main>
+          <div class="field">
+            <label for="njia">Njia ya Malipo</label>
+            <select id="njia" name="njia">
+              <option value="cash">Cash</option>
+              <option value="mpesa">M-Pesa</option>
+              <option value="benki">Benki</option>
+            </select>
+          </div>
+        </div>
 
-    <footer>
-      <p>Safari ya Software Development — TEHAMA TDC Global</p>
-    </footer>
+        <div class="field">
+          <label for="kumbukumbu">Kumbukumbu <span class="hiari">(hiari)</span></label>
+          <input type="text" id="kumbukumbu" name="kumbukumbu" placeholder="mfano: TXN-9001">
+        </div>
 
-    <!-- 1. Library ya Supabase (kutoka CDN — hakuna npm bado) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- 2. Daraja letu: URL na key -->
-    <script src="js/supabase.js"></script>
-    <!-- 3. App yetu -->
-    <script src="js/app.js"></script>
-  </body>
+        <!-- Hapa ndipo ujumbe wa kosa au wa mafanikio utakapoonekana -->
+        <p class="ujumbe" id="ujumbe"></p>
+
+        <button type="submit" id="btnHifadhi">Hifadhi Malipo</button>
+      </form>
+    </section>
+
+    <!-- FR-F2: Orodha ya wachangiaji -->
+    <section class="list">
+      <h2>Wachangiaji</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Jina</th>
+            <th>Ahadi</th>
+            <th>Amelipa</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <!-- tbody ni TUPU: JavaScript itaijaza kutoka database -->
+        <tbody id="contributorRows"></tbody>
+      </table>
+      <p class="note">Rekodi malipo hapo juu — jedwali, cards na donut vitabadilika papo hapo, bila ku-refresh ukurasa. ✨</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Safari ya Software Development — TEHAMA TDC Global</p>
+  </footer>
+
+  <!-- 1. Library ya Supabase (kutoka CDN — hakuna npm bado) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- 2. Daraja letu: URL na key -->
+  <script src="js/supabase.js"></script>
+  <!-- 3. App yetu -->
+  <script src="js/app.js"></script>
+</body>
 </html>

@@ -1,43 +1,40 @@
 // ============================================================
 // Michango Manager — app.js
-// Session 5: Data HALISI kutoka database (siyo ya kubuni tena!)
+// Session 6: Mfumo unaanza KUANDIKA (siyo kusoma tu!)
 // ============================================================
 
-// Tukio tunalolionyesha (session ijayo tutaruhusu kuchagua)
 const EVENT_ID = "a0000000-0000-0000-0000-000000000001";
 
-// ------------------------------------------------------------
-// 1. KULETA DATA KUTOKA DATABASE
-// ------------------------------------------------------------
-// "async" = function inayoweza KUSUBIRI. Kuleta data kutoka
-// internet kunachukua muda — hatuwezi kusimamisha ukurasa mzima.
+// Tunahifadhi wachangiaji hapa ili sehemu mbalimbali za app
+// (jedwali, dropdown, hesabu) zizitumie bila kuuliza database tena.
+let wachangiajiWote = [];
+
+
+// ============================================================
+// SEHEMU 1 — KULETA DATA (kutoka Session 5)
+// ============================================================
 async function letaData() {
-  // Leta tukio
   const { data: tukio, error: e1 } = await db
     .from("events")
     .select("*")
     .eq("id", EVENT_ID)
-    .single(); // tunataka row MOJA, siyo orodha
+    .single();
 
   if (e1) {
     console.error("Kosa la kuleta tukio:", e1);
     return null;
   }
 
-  // Leta wachangiaji pamoja na ahadi, malipo na michango ya vitu.
-  // Hii ni JOIN yetu ya SQL — sasa kwa lugha ya JavaScript!
   const { data: wachangiaji, error: e2 } = await db
     .from("contributors")
-    .select(
-      `
+    .select(`
       id,
       jina,
       simu,
       pledges ( kiasi ),
       payments ( kiasi ),
       in_kind ( maelezo )
-    `,
-    )
+    `)
     .eq("event_id", EVENT_ID)
     .order("jina");
 
@@ -49,33 +46,43 @@ async function letaData() {
   return { tukio, wachangiaji };
 }
 
-// ------------------------------------------------------------
-// 2. HESABU — functions ndogo, kila moja na kazi MOJA
-// ------------------------------------------------------------
 
-// FR-E3: balance = ahadi − jumla ya malipo
-// Ile kanuni ya ERD: "balance haihifadhiwi, inahesabiwa"
-function calculateBalance(mchangiaji) {
-  const ahadi = mchangiaji.pledges?.[0]?.kiasi ?? 0;
-  return ahadi - jumlaYaMalipo(mchangiaji);
-}
+// ============================================================
+// SEHEMU 2 — HESABU (kila function na kazi MOJA)
+// ============================================================
 
 function jumlaYaMalipo(mchangiaji) {
-  // reduce: "kusanya orodha kuwa namba moja"
   return mchangiaji.payments.reduce((jumla, m) => jumla + Number(m.kiasi), 0);
 }
 
-// FR-F2: status ya mchangiaji
+// FR-E3: balance = ahadi − jumla ya malipo
+function calculateBalance(mchangiaji) {
+  const ahadi = Number(mchangiaji.pledges?.[0]?.kiasi ?? 0);
+  return ahadi - jumlaYaMalipo(mchangiaji);
+}
+
+// FR-F2 + FR-H3: status ya mchangiaji
 function statusYake(mchangiaji) {
   const ahadi = Number(mchangiaji.pledges?.[0]?.kiasi ?? 0);
   const amelipa = jumlaYaMalipo(mchangiaji);
   const balance = ahadi - amelipa;
+  const vitu = mchangiaji.in_kind.map(k => k.maelezo).join(", ");
 
-  // FR-H3: mchangiaji wa vitu hasahauliki!
-  if (ahadi === 0 && amelipa === 0 && mchangiaji.in_kind.length > 0) {
-    const vitu = mchangiaji.in_kind.map((k) => k.maelezo).join(", ");
+  // Hakuna ahadi, hakuna malipo, lakini amechangia VITU (FR-H1)
+  if (ahadi === 0 && amelipa === 0 && vitu) {
     return { badge: "inkind", maandishi: vitu + " (vitu) 🎁" };
   }
+
+  // Amelipa BILA kuahidi (FR-D3) — hakuna balance ya kuzungumzia.
+  // Bug tuliyoigundua darasani: bila tawi hili, mtu huyu alionyeshwa
+  // "Balance -50,000" — balance hasi haina maana!
+  if (ahadi === 0 && amelipa > 0) {
+    return {
+      badge: "paid",
+      maandishi: "Amechangia " + fedha(amelipa) + (vitu ? " + " + vitu + " 🎁" : "")
+    };
+  }
+
   if (ahadi > 0 && balance <= 0) {
     return { badge: "paid", maandishi: "Amelipa yote" };
   }
@@ -85,41 +92,38 @@ function statusYake(mchangiaji) {
   return { badge: "unpaid", maandishi: "Hajalipa" };
 }
 
-// Kuandika fedha kwa mtindo wa TZS: 1000000 → "1,000,000"
 function fedha(n) {
   return Number(n).toLocaleString("en-US");
 }
 
-// ------------------------------------------------------------
-// 3. KUONYESHA — kuweka data kwenye ukurasa
-// ------------------------------------------------------------
+
+// ============================================================
+// SEHEMU 3 — KUONYESHA
+// ============================================================
+
 function onyeshaTukio(tukio) {
   document.getElementById("eventName").textContent =
     tukio.jina + (tukio.tarehe ? " — " + tukio.tarehe : "");
 }
 
 function onyeshaCards(tukio, wachangiaji) {
-  // Jumla ya malipo ya wachangiaji WOTE
   const iliyokusanywa = wachangiaji.reduce(
-    (jumla, m) => jumla + jumlaYaMalipo(m),
-    0,
+    (jumla, m) => jumla + jumlaYaMalipo(m), 0
   );
   const lengo = Number(tukio.lengo_la_fedha);
 
-  document.getElementById("collected").textContent =
-    "TZS " + fedha(iliyokusanywa);
+  document.getElementById("collected").textContent = "TZS " + fedha(iliyokusanywa);
   document.getElementById("target").textContent = "TZS " + fedha(lengo);
 
-  // FR-F1: asilimia ya lengo
   const asilimia = lengo > 0 ? Math.round((iliyokusanywa / lengo) * 100) : 0;
   animateDonut(asilimia);
 }
 
 function onyeshaJedwali(wachangiaji) {
   const tbody = document.getElementById("contributorRows");
-  tbody.innerHTML = ""; // futa yaliyokuwepo
+  tbody.innerHTML = "";
 
-  wachangiaji.forEach((m) => {
+  wachangiaji.forEach(m => {
     const ahadi = Number(m.pledges?.[0]?.kiasi ?? 0);
     const amelipa = jumlaYaMalipo(m);
     const st = statusYake(m);
@@ -128,16 +132,34 @@ function onyeshaJedwali(wachangiaji) {
     tr.innerHTML = `
       <td>${m.jina}</td>
       <td>${ahadi > 0 ? fedha(ahadi) : "—"}</td>
-      <td>${amelipa > 0 ? fedha(amelipa) : ahadi > 0 ? "0" : "—"}</td>
+      <td>${amelipa > 0 ? fedha(amelipa) : (ahadi > 0 ? "0" : "—")}</td>
       <td><span class="badge ${st.badge}">${st.maandishi}</span></td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-// ------------------------------------------------------------
-// 4. ANIMATION YA DONUT (kutoka session iliyopita)
-// ------------------------------------------------------------
+// MPYA Session 6: kujaza dropdown ya form kutoka database
+function jazaDropdown(wachangiaji) {
+  const select = document.getElementById("mchangiaji");
+  const iliyochaguliwa = select.value;          // kumbuka aliyechaguliwa
+
+  select.innerHTML = '<option value="">-- Chagua mchangiaji --</option>';
+
+  wachangiaji.forEach(m => {
+    const option = document.createElement("option");
+    option.value = m.id;                        // uuid inakwenda database
+    option.textContent = m.jina;                // jina linaonekana kwa mtumiaji
+    select.appendChild(option);
+  });
+
+  select.value = iliyochaguliwa;                // rudisha chaguo lake
+}
+
+
+// ============================================================
+// SEHEMU 4 — ANIMATION YA DONUT
+// ============================================================
 function animateDonut(asilimia) {
   const muda = 1200;
   const percentEl = document.getElementById("percent");
@@ -163,9 +185,123 @@ function animateDonut(asilimia) {
   requestAnimationFrame(panda);
 }
 
+
+// ============================================================
+// SEHEMU 5 — FORM: KUSOMA, KU-VALIDATE, KUHIFADHI  (MPYA!)
+// ============================================================
+
 // ------------------------------------------------------------
-// 5. KUANZISHA — hapa kila kitu kinaanzia
+// 5a. VALIDATION — kuangalia kabla ya kutuma
 // ------------------------------------------------------------
+// Function hii inarudisha:
+//   null              = kila kitu ni sawa
+//   "ujumbe wa kosa"  = kuna tatizo
+//
+// Kanuni: validation MOJA kwa kila sharti, na ujumbe unaoeleweka
+// kwa mtumiaji — siyo "Error 400".
+function angaliaMalipo(malipo) {
+  if (!malipo.contributor_id) {
+    return "Tafadhali chagua mchangiaji.";
+  }
+
+  if (!malipo.kiasi || Number.isNaN(malipo.kiasi)) {
+    return "Tafadhali andika kiasi.";
+  }
+
+  if (malipo.kiasi <= 0) {
+    return "Kiasi lazima kiwe zaidi ya sifuri.";
+  }
+
+  if (!malipo.tarehe) {
+    return "Tafadhali chagua tarehe.";
+  }
+
+  const njiaHalali = ["cash", "mpesa", "benki"];
+  if (!njiaHalali.includes(malipo.njia)) {
+    return "Njia ya malipo si sahihi.";
+  }
+
+  return null;   // hakuna kosa
+}
+
+// ------------------------------------------------------------
+// 5b. Kuonyesha ujumbe (kosa au mafanikio)
+// ------------------------------------------------------------
+function onyeshaUjumbe(maandishi, aina) {
+  const el = document.getElementById("ujumbe");
+  el.textContent = maandishi;
+  el.className = "ujumbe " + (aina || "");      // aina: "kosa" au "mafanikio"
+}
+
+// ------------------------------------------------------------
+// 5c. Kuhifadhi malipo kwenye database (FR-E1)
+// ------------------------------------------------------------
+async function hifadhiMalipo(malipo) {
+  const { data, error } = await db
+    .from("payments")
+    .insert(malipo)
+    .select();            // .select() inaturudishia row iliyohifadhiwa
+
+  return { data, error };
+}
+
+// ------------------------------------------------------------
+// 5d. Kinachotokea mtu anapobonyeza "Hifadhi Malipo"
+// ------------------------------------------------------------
+async function tumaForm(tukio) {
+  tukio.preventDefault();          // zuia browser kupakia ukurasa upya
+
+  const btn = document.getElementById("btnHifadhi");
+
+  // 1. SOMA thamani kutoka form
+  const malipo = {
+    contributor_id: document.getElementById("mchangiaji").value,
+    kiasi: Number(document.getElementById("kiasi").value),
+    tarehe: document.getElementById("tarehe").value,
+    njia: document.getElementById("njia").value,
+    kumbukumbu: document.getElementById("kumbukumbu").value.trim() || null
+  };
+
+  // 2. ANGALIA (validation)
+  const kosa = angaliaMalipo(malipo);
+  if (kosa) {
+    onyeshaUjumbe(kosa, "kosa");
+    return;                        // simama hapa — hatutumi chochote
+  }
+
+  // 3. TUMA — na zuia mtu kubonyeza mara mbili akiwa anasubiri
+  btn.disabled = true;
+  onyeshaUjumbe("Inahifadhi...", "");
+
+  const { error } = await hifadhiMalipo(malipo);
+
+  btn.disabled = false;
+
+  // 4. JIBU
+  if (error) {
+    console.error("Kosa la kuhifadhi:", error);
+    onyeshaUjumbe("Imeshindikana kuhifadhi: " + error.message, "kosa");
+    return;
+  }
+
+  onyeshaUjumbe(
+    "Imehifadhiwa! TZS " + fedha(malipo.kiasi) + " imerekodiwa. ✅",
+    "mafanikio"
+  );
+
+  // 5. SAFISHA form (acha mchangiaji na tarehe — mara nyingi
+  //    mratibu anarekodi malipo kadhaa mfululizo)
+  document.getElementById("kiasi").value = "";
+  document.getElementById("kumbukumbu").value = "";
+
+  // 6. PAKIA UPYA — dashboard nzima inajibu bila ku-refresh ukurasa
+  await anzisha();
+}
+
+
+// ============================================================
+// SEHEMU 6 — KUANZISHA
+// ============================================================
 async function anzisha() {
   const data = await letaData();
 
@@ -175,11 +311,22 @@ async function anzisha() {
     return;
   }
 
-  console.log("Data kutoka database:", data); // 👀 fungua Console uione!
+  wachangiajiWote = data.wachangiaji;
 
   onyeshaTukio(data.tukio);
   onyeshaCards(data.tukio, data.wachangiaji);
   onyeshaJedwali(data.wachangiaji);
+  jazaDropdown(data.wachangiaji);
 }
 
+// Weka tarehe ya leo kwenye form (default nzuri kwa mtumiaji)
+function tarehYaLeo() {
+  const leo = new Date().toISOString().split("T")[0];   // "2026-09-25"
+  document.getElementById("tarehe").value = leo;
+}
+
+// Unganisha form na function yetu
+document.getElementById("paymentForm").addEventListener("submit", tumaForm);
+
+tarehYaLeo();
 anzisha();
