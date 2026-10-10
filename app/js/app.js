@@ -1,6 +1,6 @@
 // ============================================================
 // Michango Manager — app.js
-// Session 6: Mfumo unaanza KUANDIKA (siyo kusoma tu!)
+// Session 6 + Homework: Kuandika, validation yenye rangi, na reset kamili
 // ============================================================
 
 const EVENT_ID = "a0000000-0000-0000-0000-000000000001";
@@ -201,31 +201,60 @@ function animateDonut(asilimia) {
 // kwa mtumiaji — siyo "Error 400".
 function angaliaMalipo(malipo) {
   if (!malipo.contributor_id) {
-    return "Tafadhali chagua mchangiaji.";
+    return { ujumbe: "Tafadhali chagua mchangiaji.", sehemu: "mchangiaji" };
   }
 
   if (!malipo.kiasi || Number.isNaN(malipo.kiasi)) {
-    return "Tafadhali andika kiasi.";
+    return { ujumbe: "Tafadhali andika kiasi.", sehemu: "kiasi" };
   }
 
   if (malipo.kiasi <= 0) {
-    return "Kiasi lazima kiwe zaidi ya sifuri.";
+    return { ujumbe: "Kiasi lazima kiwe zaidi ya sifuri.", sehemu: "kiasi" };
   }
 
   if (!malipo.tarehe) {
-    return "Tafadhali chagua tarehe.";
+    return { ujumbe: "Tafadhali chagua tarehe.", sehemu: "tarehe" };
   }
 
   const njiaHalali = ["cash", "mpesa", "benki"];
   if (!njiaHalali.includes(malipo.njia)) {
-    return "Njia ya malipo si sahihi.";
+    return { ujumbe: "Tafadhali chagua njia ya malipo.", sehemu: "njia" };
   }
 
   return null;   // hakuna kosa
 }
 
 // ------------------------------------------------------------
-// 5b. Kuonyesha ujumbe (kosa au mafanikio)
+// 5b. HOMEWORK: kuonyesha kosa kwenye SEHEMU yenyewe (nyekundu)
+// ------------------------------------------------------------
+// Sehemu zote za form — tunazihifadhi mahali pamoja ili tusirudie
+// majina kila mara (na tukiongeza sehemu mpya, tunabadilisha hapa tu).
+const SEHEMU_ZOTE = ["mchangiaji", "kiasi", "tarehe", "njia", "kumbukumbu"];
+
+function safishaMakosa() {
+  SEHEMU_ZOTE.forEach(id => {
+    document.getElementById(id).classList.remove("makosa");
+  });
+}
+
+function wekaKosa(sehemu) {
+  const el = document.getElementById(sehemu);
+  el.classList.add("makosa");
+  el.focus();
+}
+
+// HOMEWORK: kurudisha form yote mwanzo baada ya kuhifadhi
+function safishaForm() {
+  document.getElementById("mchangiaji").value = "";
+  document.getElementById("kiasi").value = "";
+  document.getElementById("njia").value = "";
+  document.getElementById("kumbukumbu").value = "";
+  tarehYaLeo();
+  safishaMakosa();
+}
+
+// ------------------------------------------------------------
+// 5c. Kuonyesha ujumbe wa juu (kosa au mafanikio)
 // ------------------------------------------------------------
 function onyeshaUjumbe(maandishi, aina) {
   const el = document.getElementById("ujumbe");
@@ -234,7 +263,7 @@ function onyeshaUjumbe(maandishi, aina) {
 }
 
 // ------------------------------------------------------------
-// 5c. Kuhifadhi malipo kwenye database (FR-E1)
+// 5d. Kuhifadhi malipo kwenye database (FR-E1)
 // ------------------------------------------------------------
 async function hifadhiMalipo(malipo) {
   const { data, error } = await db
@@ -246,7 +275,7 @@ async function hifadhiMalipo(malipo) {
 }
 
 // ------------------------------------------------------------
-// 5d. Kinachotokea mtu anapobonyeza "Hifadhi Malipo"
+// 5e. Kinachotokea mtu anapobonyeza "Hifadhi Malipo"
 // ------------------------------------------------------------
 async function tumaForm(tukio) {
   tukio.preventDefault();          // zuia browser kupakia ukurasa upya
@@ -263,9 +292,11 @@ async function tumaForm(tukio) {
   };
 
   // 2. ANGALIA (validation)
+  safishaMakosa();                 // ondoa nyekundu za jaribio lililopita
   const kosa = angaliaMalipo(malipo);
   if (kosa) {
-    onyeshaUjumbe(kosa, "kosa");
+    onyeshaUjumbe(kosa.ujumbe, "kosa");
+    wekaKosa(kosa.sehemu);
     return;                        // simama hapa — hatutumi chochote
   }
 
@@ -289,10 +320,8 @@ async function tumaForm(tukio) {
     "mafanikio"
   );
 
-  // 5. SAFISHA form (acha mchangiaji na tarehe — mara nyingi
-  //    mratibu anarekodi malipo kadhaa mfululizo)
-  document.getElementById("kiasi").value = "";
-  document.getElementById("kumbukumbu").value = "";
+  // 5. SAFISHA form yote (mchangiaji, kiasi, njia, tarehe, kumbukumbu)
+  safishaForm();
 
   // 6. PAKIA UPYA — dashboard nzima inajibu bila ku-refresh ukurasa
   await anzisha();

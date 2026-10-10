@@ -152,6 +152,17 @@ main {
   box-shadow: 0 0 0 3px rgba(176, 141, 60, 0.18);
 }
 
+/* Sehemu yenye kosa — nyekundu (lazima iwe BAADA ya :focus) */
+.field input.makosa,
+.field select.makosa {
+  border-color: var(--bad);
+  background: #FDF4F4;
+}
+.field input.makosa:focus,
+.field select.makosa:focus {
+  box-shadow: 0 0 0 3px rgba(166, 61, 61, 0.18);
+}
+
 /* Tarehe na njia: bega kwa bega kwenye screen kubwa */
 .row-2 {
   display: grid;
