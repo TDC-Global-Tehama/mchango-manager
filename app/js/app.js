@@ -1,6 +1,6 @@
 // ============================================================
 // Michango Manager — app.js
-// Session 6 + Homework: Kuandika, validation yenye rangi, na reset kamili
+// Session 7: Login na usalama halisi (FR-A1, FR-A2, NFR-3)
 // ============================================================
 
 const EVENT_ID = "a0000000-0000-0000-0000-000000000001";
@@ -14,11 +14,16 @@ let wachangiajiWote = [];
 // SEHEMU 1 — KULETA DATA (kutoka Session 5)
 // ============================================================
 async function letaData() {
+  // .maybeSingle() badala ya .single():
+  // ".single()" inarudisha KOSA kama hakuna row.
+  // ".maybeSingle()" inarudisha null kwa utulivu — na baada ya
+  // RLS, "hakuna row" ni jibu la kawaida kabisa: tukio lipo,
+  // lakini siyo lako.
   const { data: tukio, error: e1 } = await db
     .from("events")
     .select("*")
     .eq("id", EVENT_ID)
-    .single();
+    .maybeSingle();
 
   if (e1) {
     console.error("Kosa la kuleta tukio:", e1);
@@ -340,6 +345,19 @@ async function anzisha() {
     return;
   }
 
+  // Umeingia, lakini database haikukupa tukio lolote.
+  // Siyo kosa — ni RLS ikifanya kazi: tukio si lako. (NFR-3)
+  if (!data.tukio) {
+    document.getElementById("eventName").textContent =
+      "Huna tukio lolote — database haikutoa data yoyote kwako.";
+    document.getElementById("collected").textContent = "TZS 0";
+    document.getElementById("target").textContent = "TZS 0";
+    document.getElementById("contributorRows").innerHTML = "";
+    jazaDropdown([]);
+    animateDonut(0);
+    return;
+  }
+
   wachangiajiWote = data.wachangiaji;
 
   onyeshaTukio(data.tukio);
@@ -357,5 +375,122 @@ function tarehYaLeo() {
 // Unganisha form na function yetu
 document.getElementById("paymentForm").addEventListener("submit", tumaForm);
 
-tarehYaLeo();
-anzisha();
+
+// ============================================================
+// SEHEMU 7 — LOGIN NA USALAMA  (MPYA Session 7)
+// ============================================================
+
+// ------------------------------------------------------------
+// 7a. Kuonyesha skrini sahihi
+// ------------------------------------------------------------
+function onyeshaLogin() {
+  document.getElementById("loginScreen").hidden = false;
+  document.getElementById("appScreen").hidden = true;
+}
+
+async function onyeshaApp(mtumiaji) {
+  document.getElementById("loginScreen").hidden = true;
+  document.getElementById("appScreen").hidden = false;
+  document.getElementById("mtumiajiEmail").textContent = mtumiaji.email;
+
+  tarehYaLeo();
+  await anzisha();
+}
+
+// ------------------------------------------------------------
+// 7b. Je, kuna mtu ameingia tayari? (FR-A1)
+// ------------------------------------------------------------
+// Supabase inahifadhi session kwenye browser. Ukirefresh ukurasa,
+// hutakiwi kuingia tena — na hiyo ndiyo tabia tunayoitegemea
+// kwenye app zote tunazozitumia.
+async function angaliaSession() {
+  const { data } = await db.auth.getSession();
+
+  if (data.session) {
+    await onyeshaApp(data.session.user);
+  } else {
+    onyeshaLogin();
+  }
+}
+
+// ------------------------------------------------------------
+// 7c. Kuingia
+// ------------------------------------------------------------
+async function ingia(tukio) {
+  tukio.preventDefault();
+
+  const btn = document.getElementById("loginBtn") || document.getElementById("btnIngia");
+  const emailEl = document.getElementById("email");
+  const passEl = document.getElementById("password");
+
+  safishaMakosaYaLogin();
+
+  const email = emailEl.value.trim();
+  const password = passEl.value;
+
+  // Validation ile ile tuliyoijifunza Session 6
+  if (!email) return kosaLaLogin("Andika email yako.", emailEl);
+  if (!password) return kosaLaLogin("Andika password yako.", passEl);
+
+  btn.disabled = true;
+  onyeshaUjumbeWaLogin("Inaingia...", "");
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+  btn.disabled = false;
+
+  if (error) {
+    // HATUSEMI "email haipo" wala "password si sahihi" peke yake.
+    // Ukimwambia mtu "email ipo lakini password si sahihi",
+    // umemthibitishia kwamba akaunti ipo — hilo ni msaada kwa
+    // anayejaribu kuvunja.
+    console.error("Kosa la kuingia:", error);
+    return kosaLaLogin("Email au password si sahihi.", passEl);
+  }
+
+  // Safisha form (password isibaki kwenye skrini)
+  emailEl.value = "";
+  passEl.value = "";
+  onyeshaUjumbeWaLogin("", "");
+
+  await onyeshaApp(data.user);
+}
+
+// ------------------------------------------------------------
+// 7d. Kutoka
+// ------------------------------------------------------------
+async function toka() {
+  await db.auth.signOut();
+  location.reload();     // njia safi zaidi ya kufuta kila kitu
+}
+
+// ------------------------------------------------------------
+// 7e. Vipande vidogo vya skrini ya login
+// ------------------------------------------------------------
+function onyeshaUjumbeWaLogin(maandishi, aina) {
+  const el = document.getElementById("loginUjumbe");
+  el.textContent = maandishi;
+  el.className = "ujumbe " + (aina || "");
+}
+
+function kosaLaLogin(ujumbe, sehemu) {
+  onyeshaUjumbeWaLogin(ujumbe, "kosa");
+  if (sehemu) {
+    sehemu.classList.add("makosa");
+    sehemu.focus();
+  }
+}
+
+function safishaMakosaYaLogin() {
+  ["email", "password"].forEach(id => {
+    document.getElementById(id).classList.remove("makosa");
+  });
+}
+
+// ------------------------------------------------------------
+// 7f. Kuunganisha
+// ------------------------------------------------------------
+document.getElementById("loginForm").addEventListener("submit", ingia);
+document.getElementById("btnToka").addEventListener("click", toka);
+
+angaliaSession();
