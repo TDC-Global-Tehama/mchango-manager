@@ -92,6 +92,109 @@ body {
 .btn-toka:hover { background: var(--brass); color: var(--navy); }
 
 
+/* ============================================================
+   MPYA Session 8
+   ============================================================ */
+
+/* Kiungo kinachoonekana kama maandishi (kubadilisha Ingia/Jisajili) */
+.login-badilisha {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-size: 0.88rem;
+  color: #6B7280;
+}
+
+.kiungo-btn {
+  width: auto;
+  display: inline;
+  padding: 0;
+  margin: 0 0 0 0.25rem;
+  background: none;
+  border: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--navy);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.kiungo-btn:hover { color: var(--brass); }
+
+/* Kuchagua tukio, juu ya ukurasa */
+.top-tukio { min-width: 0; }
+
+.tukio-safu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.tukio-safu select {
+  width: auto;
+  max-width: 15rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.9rem;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 6px;
+}
+.tukio-safu select option { color: var(--ink); }
+
+/* Kitufe kidogo */
+.btn-dogo {
+  width: auto;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: transparent;
+  color: var(--brass);
+  border: 1px solid var(--brass);
+  border-radius: 6px;
+}
+.btn-dogo:hover { background: var(--brass); color: var(--navy); }
+
+/* Kitufe cha Ghairi */
+.btn-tulivu {
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid #D8DCE3;
+}
+.btn-tulivu:hover { background: #F4F5F7; }
+
+.vitufe { display: flex; gap: 0.6rem; }
+.vitufe button { flex: 1; }
+
+/* Kichwa cha orodha na kitufe chake */
+.list-juu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.list-juu h2 { margin-bottom: 0.5rem; }
+
+/* Hali ya mtumiaji mpya — hana tukio */
+.tupu {
+  background: #fff;
+  border: 1px dashed #D8DCE3;
+  border-radius: 12px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.tupu h2 { margin: 0 0 0.5rem; color: var(--navy); }
+.tupu p {
+  margin: 0 auto 1.25rem;
+  color: #6B7280;
+  max-width: 34ch;
+}
+.tupu button { width: auto; padding: 0.7rem 1.5rem; }
+
+
 /* ---------- Header ---------- */
 .top {
   background: var(--navy);
@@ -104,9 +207,10 @@ body {
   color: var(--brass);
 }
 .event-name {
-  margin: 0.3rem 0 0;
-  font-size: 0.95rem;
-  opacity: 0.9;
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--navy);
 }
 
 main {
