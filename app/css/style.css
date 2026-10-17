@@ -167,6 +167,84 @@ body {
 .vitufe { display: flex; gap: 0.6rem; }
 .vitufe button { flex: 1; }
 
+/* ============================================================
+   SEHEMU YA VITENDO — vitufe vitatu, fomu moja kwa wakati
+   ============================================================ */
+.vitendo-safu {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.kitendo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.9rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--navy);
+  background: #fff;
+  border: 1px solid #D8DCE3;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  line-height: 1.2;
+}
+.kitendo:hover { border-color: var(--navy); background: #F7F8FA; }
+
+/* Kitufe cha fomu iliyo wazi — ili ujue uko wapi */
+.kitendo.hai {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+
+.kitendo-ikoni { font-size: 1.3rem; line-height: 1; }
+
+@media (max-width: 560px) {
+  .vitendo-safu { grid-template-columns: 1fr; }
+  .kitendo {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+  }
+}
+
+/* ---------- Kichwa cha fomu iliyo wazi ---------- */
+.form-kichwa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+.form-kichwa h2 { margin: 0; }
+
+.funga-btn {
+  width: auto;
+  padding: 0.1rem 0.5rem;
+  font-size: 1.4rem;
+  line-height: 1;
+  font-family: inherit;
+  color: #6B7280;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.funga-btn:hover { background: #F4F5F7; color: var(--navy); }
+
+/* Fomu iliyo wazi inajitofautisha na ukurasa */
+.form-section[id$="FormSection"] {
+  border-left: 3px solid var(--brass);
+}
+
 /* Kichwa cha orodha na kitufe chake */
 .list-juu {
   display: flex;

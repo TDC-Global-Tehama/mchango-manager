@@ -9,7 +9,7 @@
 <body>
 
   <!-- ============================================================
-       SKRINI YA KUINGIA — sasa na KUJISAJILI (Session 8)
+       SKRINI YA KUINGIA — na kujisajili (Session 8)
        ============================================================ -->
   <div id="loginScreen" class="login-screen">
     <form class="login-card" id="loginForm" novalidate>
@@ -34,7 +34,6 @@
 
       <button type="submit" id="btnIngia">Ingia</button>
 
-      <!-- MPYA Session 8: kubadilisha kati ya kuingia na kujisajili -->
       <p class="login-badilisha">
         <span id="badilishaMaandishi">Huna akaunti?</span>
         <button type="button" class="kiungo-btn" id="btnBadilisha">Jisajili</button>
@@ -52,11 +51,8 @@
       <div class="top-safu">
         <div class="top-tukio">
           <h1>Michango Manager 🏠</h1>
-
-          <!-- MPYA Session 8: kuchagua kati ya matukio yako -->
           <div class="tukio-safu" id="tukioSafu" hidden>
             <select id="chaguaTukio" aria-label="Chagua tukio"></select>
-            <button type="button" class="btn-dogo" id="btnTukioJipya">+ Tukio jipya</button>
           </div>
         </div>
 
@@ -69,10 +65,7 @@
 
     <main>
 
-      <!-- ============================================================
-           MPYA Session 8: Hali ya mtumiaji mpya
-           Hana tukio lolote — hapa ndipo safari yake inapoanzia.
-           ============================================================ -->
+      <!-- Hali ya mtumiaji mpya — hana tukio -->
       <section class="tupu" id="hakunaTukio" hidden>
         <h2>Karibu! 👋🏽</h2>
         <p>Huna tukio lolote bado. Fungua tukio lako la kwanza ili uanze kurekodi michango.</p>
@@ -80,60 +73,11 @@
       </section>
 
 
-      <!-- ============================================================
-           MPYA Session 8: Fomu ya kufungua tukio (FR-B1)
-           ============================================================ -->
-      <section class="form-section" id="tukioFormSection" hidden>
-        <h2>Fungua Tukio Jipya 🎉</h2>
-
-        <form id="tukioForm" novalidate>
-          <div class="field">
-            <label for="tukioJina">Jina la tukio</label>
-            <input type="text" id="tukioJina" name="tukioJina"
-                   placeholder="mfano: Harusi ya Amina &amp; Juma">
-          </div>
-
-          <div class="row-2">
-            <div class="field">
-              <label for="tukioAina">Aina</label>
-              <select id="tukioAina" name="tukioAina">
-                <option value="harusi">Harusi</option>
-                <option value="msiba">Msiba</option>
-                <option value="sherehe">Sherehe</option>
-                <option value="nyingine">Nyingine</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="tukioTarehe">Tarehe</label>
-              <input type="date" id="tukioTarehe" name="tukioTarehe">
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="tukioLengo">Lengo la fedha (TZS)</label>
-            <input type="number" id="tukioLengo" name="tukioLengo" min="0" step="10000"
-                   placeholder="mfano: 5000000">
-          </div>
-
-          <p class="ujumbe" id="tukioUjumbe"></p>
-
-          <div class="vitufe">
-            <button type="submit" id="btnHifadhiTukio">Fungua Tukio</button>
-            <button type="button" class="btn-tulivu" id="btnGhairiTukio">Ghairi</button>
-          </div>
-        </form>
-      </section>
-
-
-      <!-- ============================================================
-           Dashboard — inaonekana pale tukio limechaguliwa
-           ============================================================ -->
       <div id="tukioData" hidden>
 
         <p class="event-name" id="eventName"></p>
 
-        <!-- FR-F1 -->
+        <!-- FR-F1: Dashboard -->
         <section class="cards">
           <article class="card">
             <p class="label">Jumla Iliyokusanywa</p>
@@ -151,9 +95,39 @@
           </article>
         </section>
 
-        <!-- FR-E1: Form ya kurekodi malipo -->
-        <section class="form-section">
-          <h2>Rekodi Malipo 💰</h2>
+
+        <!-- ============================================================
+             MPYA: SEHEMU MOJA YA VITENDO
+             Badala ya forms tatu zilizo wazi kwa wakati mmoja, hapa
+             kuna vitufe vitatu. Ukibonyeza kimoja, fomu yake inafunguka
+             chini — na nyingine zinafungwa. Fomu MOJA kwa wakati.
+             ============================================================ -->
+        <nav class="vitendo-safu" aria-label="Vitendo">
+          <button type="button" class="kitendo" data-fomu="malipoFormSection" id="btnFomuMalipo">
+            <span class="kitendo-ikoni">💰</span>
+            <span>Rekodi malipo</span>
+          </button>
+          <button type="button" class="kitendo" data-fomu="mchangiajiFormSection">
+            <span class="kitendo-ikoni">👤</span>
+            <span>Ongeza mchangiaji</span>
+          </button>
+          <button type="button" class="kitendo" data-fomu="tukioFormSection">
+            <span class="kitendo-ikoni">🎉</span>
+            <span>Tukio jipya</span>
+          </button>
+        </nav>
+
+
+        <!-- ============================================================
+             FOMU ZOTE — moja tu inaonekana kwa wakati
+             ============================================================ -->
+
+        <!-- FR-E1: Malipo -->
+        <section class="form-section" id="malipoFormSection" hidden>
+          <div class="form-kichwa">
+            <h2>Rekodi Malipo 💰</h2>
+            <button type="button" class="funga-btn" data-funga aria-label="Funga fomu">&times;</button>
+          </div>
 
           <form id="paymentForm" novalidate>
             <div class="field">
@@ -192,16 +166,20 @@
 
             <p class="ujumbe" id="ujumbe"></p>
 
-            <button type="submit" id="btnHifadhi">Hifadhi Malipo</button>
+            <div class="vitufe">
+              <button type="submit" id="btnHifadhi">Hifadhi Malipo</button>
+              <button type="button" class="btn-tulivu" data-funga>Funga</button>
+            </div>
           </form>
         </section>
 
 
-        <!-- ============================================================
-             MPYA Session 8: Fomu ya kuongeza mchangiaji (FR-C1, FR-D1)
-             ============================================================ -->
+        <!-- FR-C1, FR-D1: Mchangiaji -->
         <section class="form-section" id="mchangiajiFormSection" hidden>
-          <h2>Ongeza Mchangiaji 👤</h2>
+          <div class="form-kichwa">
+            <h2>Ongeza Mchangiaji 👤</h2>
+            <button type="button" class="funga-btn" data-funga aria-label="Funga fomu">&times;</button>
+          </div>
 
           <form id="mchangiajiForm" novalidate>
             <div class="field">
@@ -226,7 +204,54 @@
 
             <div class="vitufe">
               <button type="submit" id="btnHifadhiMchangiaji">Ongeza</button>
-              <button type="button" class="btn-tulivu" id="btnGhairiMchangiaji">Ghairi</button>
+              <button type="button" class="btn-tulivu" data-funga>Funga</button>
+            </div>
+          </form>
+        </section>
+
+
+        <!-- FR-B1: Tukio -->
+        <section class="form-section" id="tukioFormSection" hidden>
+          <div class="form-kichwa">
+            <h2>Fungua Tukio Jipya 🎉</h2>
+            <button type="button" class="funga-btn" data-funga aria-label="Funga fomu">&times;</button>
+          </div>
+
+          <form id="tukioForm" novalidate>
+            <div class="field">
+              <label for="tukioJina">Jina la tukio</label>
+              <input type="text" id="tukioJina" name="tukioJina"
+                     placeholder="mfano: Harusi ya Amina &amp; Juma">
+            </div>
+
+            <div class="row-2">
+              <div class="field">
+                <label for="tukioAina">Aina</label>
+                <select id="tukioAina" name="tukioAina">
+                  <option value="harusi">Harusi</option>
+                  <option value="msiba">Msiba</option>
+                  <option value="sherehe">Sherehe</option>
+                  <option value="nyingine">Nyingine</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="tukioTarehe">Tarehe</label>
+                <input type="date" id="tukioTarehe" name="tukioTarehe">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="tukioLengo">Lengo la fedha (TZS)</label>
+              <input type="number" id="tukioLengo" name="tukioLengo" min="0" step="10000"
+                     placeholder="mfano: 5000000">
+            </div>
+
+            <p class="ujumbe" id="tukioUjumbe"></p>
+
+            <div class="vitufe">
+              <button type="submit" id="btnHifadhiTukio">Fungua Tukio</button>
+              <button type="button" class="btn-tulivu" data-funga>Funga</button>
             </div>
           </form>
         </section>
@@ -234,10 +259,7 @@
 
         <!-- FR-F2: Orodha ya wachangiaji -->
         <section class="list">
-          <div class="list-juu">
-            <h2>Wachangiaji</h2>
-            <button type="button" class="btn-dogo" id="btnOngezaMchangiaji">+ Ongeza mchangiaji</button>
-          </div>
+          <h2>Wachangiaji</h2>
 
           <table>
             <thead>
@@ -252,7 +274,7 @@
           </table>
 
           <p class="note" id="hakunaWachangiaji" hidden>
-            Hakuna mchangiaji bado. Bonyeza "Ongeza mchangiaji" kuanza.
+            Hakuna mchangiaji bado. Bonyeza "Ongeza mchangiaji" hapo juu kuanza.
           </p>
         </section>
 

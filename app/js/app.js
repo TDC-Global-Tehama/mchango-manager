@@ -167,6 +167,57 @@ function tareheYaLeo() {
 function onyesha(id) { document.getElementById(id).hidden = false; }
 function ficha(id)   { document.getElementById(id).hidden = true; }
 
+
+// ------------------------------------------------------------
+// MENEJA WA FOMU — fomu MOJA kwa wakati
+// ------------------------------------------------------------
+// Tulikuwa na forms tatu wazi kwa pamoja. Mtumiaji aki-scroll
+// kidogo bila kukusudia, alijikuta anajaza fomu ya malipo akidhani
+// anaongeza mchangiaji — na hakuna kinachomwambia amekosea.
+//
+// Suluhisho si kuongeza maelezo. Ni kuondoa uwezekano wenyewe:
+// fomu moja tu inaonekana kwa wakati. Usipompa mtumiaji nafasi
+// ya kukosea, hatakosea.
+const FOMU_ZOTE = ["malipoFormSection", "mchangiajiFormSection", "tukioFormSection"];
+
+// Sehemu ya kwanza ya kujaza kwenye kila fomu
+const SEHEMU_YA_KWANZA = {
+  malipoFormSection: "mchangiaji",
+  mchangiajiFormSection: "mJina",
+  tukioFormSection: "tukioJina",
+};
+
+function funguaFomu(id) {
+  // Huwezi kurekodi malipo bila mchangiaji — mwelekeze mahali sahihi
+  if (id === "malipoFormSection" && wachangiajiWote.length === 0) {
+    funguaFomu("mchangiajiFormSection");
+    onyeshaUjumbe("mchangiajiUjumbe",
+      "Huna mchangiaji bado. Mwongeze mmoja kwanza, kisha urekodi malipo yake.", "");
+    return;
+  }
+
+  FOMU_ZOTE.forEach(f => {
+    const el = document.getElementById(f);
+    if (el) el.hidden = (f !== id);
+  });
+
+  // Alama kwenye kitufe kinachohusika
+  document.querySelectorAll("[data-fomu]").forEach(b => {
+    b.classList.toggle("hai", b.dataset.fomu === id);
+  });
+
+  // Peleka macho ya mtumiaji kwenye fomu, kisha mkono kwenye sehemu ya kwanza
+  const fomu = document.getElementById(id);
+  fomu.scrollIntoView({ behavior: "smooth", block: "start" });
+  const kwanza = document.getElementById(SEHEMU_YA_KWANZA[id]);
+  if (kwanza) setTimeout(() => kwanza.focus(), 250);
+}
+
+function fungaFomu() {
+  FOMU_ZOTE.forEach(ficha);
+  document.querySelectorAll("[data-fomu]").forEach(b => b.classList.remove("hai"));
+}
+
 // Sasa inachukua ID ya mahali ujumbe unapoonekana
 function onyeshaUjumbe(id, maandishi, aina) {
   const el = document.getElementById(id);
@@ -415,7 +466,7 @@ async function tumaTukio(tukioLaBrowser) {
 
   onyeshaUjumbe("tukioUjumbe", "", "");
   form.reset();
-  ficha("tukioFormSection");
+  fungaFomu();
 
   // Fungua tukio jipya moja kwa moja
   tukioId = data.id;
@@ -547,6 +598,7 @@ async function pakiaKilaKitu() {
   if (matukioYangu.length === 0) {
     onyesha("hakunaTukio");
     ficha("tukioData");
+    fungaFomu();
     jazaChaguaTukio();
     return;
   }
@@ -646,13 +698,31 @@ async function ingiaAuJisajili(tukioLaBrowser) {
 
   if (error) {
     console.error(error);
-    onyeshaUjumbe(
-      "loginUjumbe",
-      niKujisajili ? "Imeshindikana kujisajili: " + error.message
-                   : "Email au password si sahihi.",
-      "kosa"
-    );
-    return wekaKosa(passEl);
+
+    // ------------------------------------------------------------
+    // Kutofautisha makosa: siyo kila kosa ni siri
+    // ------------------------------------------------------------
+    // "Email au password si sahihi" ni ujumbe wa makusudi — hatutaki
+    // kumthibitishia mtu kwamba email fulani ina akaunti.
+    //
+    // LAKINI "haujathibitisha email" si siri: ni hali ambayo mtumiaji
+    // anaweza kuirekebisha, na kumficha kunamwacha akizunguka bure.
+    // Usalama ni kuficha kinachosaidia mvamizi — siyo kuficha kila kitu.
+    const haijathibitishwa =
+      error.code === "email_not_confirmed" ||
+      /not confirmed/i.test(error.message || "");
+
+    let ujumbe;
+    if (haijathibitishwa) {
+      ujumbe = "Akaunti yako haijathibitishwa. Angalia email yako, au muulize msimamizi akuthibitishe.";
+    } else if (niKujisajili) {
+      ujumbe = "Imeshindikana kujisajili: " + error.message;
+    } else {
+      ujumbe = "Email au password si sahihi.";
+    }
+
+    onyeshaUjumbe("loginUjumbe", ujumbe, "kosa");
+    return wekaKosa(haijathibitishwa ? emailEl : passEl);
   }
 
   emailEl.value = "";
@@ -683,26 +753,25 @@ document.getElementById("mchangiajiForm").addEventListener("submit", tumaMchangi
 document.getElementById("btnBadilisha").addEventListener("click", badilishaHali);
 document.getElementById("btnToka").addEventListener("click", toka);
 
-document.getElementById("btnTukioJipya").addEventListener("click", () => {
-  onyesha("tukioFormSection");
-  document.getElementById("tukioJina").focus();
-});
-document.getElementById("btnTukioLaKwanza").addEventListener("click", () => {
-  onyesha("tukioFormSection");
-  document.getElementById("tukioJina").focus();
-});
-document.getElementById("btnGhairiTukio").addEventListener("click", () => {
-  ficha("tukioFormSection");
-  onyeshaUjumbe("tukioUjumbe", "", "");
+// Vitufe vya kufungua fomu
+document.querySelectorAll("[data-fomu]").forEach(btn => {
+  btn.addEventListener("click", () => funguaFomu(btn.dataset.fomu));
 });
 
-document.getElementById("btnOngezaMchangiaji").addEventListener("click", () => {
-  onyesha("mchangiajiFormSection");
-  document.getElementById("mJina").focus();
+// Vitufe vyote vya kufunga (X na "Funga")
+document.querySelectorAll("[data-funga]").forEach(btn => {
+  btn.addEventListener("click", fungaFomu);
 });
-document.getElementById("btnGhairiMchangiaji").addEventListener("click", () => {
-  ficha("mchangiajiFormSection");
-  onyeshaUjumbe("mchangiajiUjumbe", "", "");
+
+// Mtumiaji mpya asiye na tukio
+document.getElementById("btnTukioLaKwanza").addEventListener("click", () => {
+  onyesha("tukioData");
+  funguaFomu("tukioFormSection");
+});
+
+// Esc inafunga fomu iliyo wazi
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") fungaFomu();
 });
 
 // Kubadilisha tukio
